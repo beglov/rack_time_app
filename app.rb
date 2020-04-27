@@ -1,14 +1,7 @@
+require_relative 'time_formatter'
+
 class App
   AVAILABLE_FORMAT = %w[year month day hour minute second].freeze
-
-  FORMAT_TO_STRFTIME = {
-    'year' => '%Y',
-    'month' => '%m',
-    'day' => '%d',
-    'hour' => '%H',
-    'minute' => '%M',
-    'second' => '%S',
-  }.freeze
 
   def call(env)
     @env = env
@@ -33,7 +26,7 @@ class App
     return [] unless time_path?
     return ["Unknown time format [#{unknown_format.join(', ')}]\n"] if unknown_format?
 
-    ["#{message}\n"]
+    ["#{TimeFormatter.new.format(format_array)}\n"]
   end
 
   def time_path?
@@ -58,14 +51,5 @@ class App
 
   def params
     Rack::Utils.parse_nested_query(@env['QUERY_STRING'])
-  end
-
-  def message
-    now = Time.now
-    now.strftime(strftime_template)
-  end
-
-  def strftime_template
-    format_array.map { |i| FORMAT_TO_STRFTIME[i] }.join('-')
   end
 end

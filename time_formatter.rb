@@ -1,5 +1,5 @@
 class TimeFormatter
-  AVAILABLE_FORMAT = %w[year month day hour minute second].freeze
+  attr_reader :received_formats, :unknown_formats
 
   FORMAT_TO_STRFTIME = {
     'year' => '%Y',
@@ -9,6 +9,8 @@ class TimeFormatter
     'minute' => '%M',
     'second' => '%S',
   }.freeze
+
+  AVAILABLE_FORMAT = FORMAT_TO_STRFTIME.keys
 
   def initialize(format, time = Time.now)
     @received_formats = format.split(',')
@@ -24,12 +26,6 @@ class TimeFormatter
 
   def time
     template = @received_formats.map { |i| FORMAT_TO_STRFTIME[i] }.join('-')
-    "#{@time.strftime(template)}\n"
-  end
-
-  def errors
-    return "Specify format!\n" if @received_formats.empty?
-
-    "Unknown time format [#{@unknown_formats.join(', ')}]\n"
+    @time.strftime(template)
   end
 end

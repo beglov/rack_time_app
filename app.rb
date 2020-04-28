@@ -19,7 +19,7 @@ class App
 
   def response(status, body)
     Rack::Response.new(
-      body,
+      "#{body}\n",
       status,
       {'Content-Type' => 'text/plain'}
     ).finish
@@ -31,7 +31,13 @@ class App
     if formatter.valid?
       response(200, formatter.time)
     else
-      response(400, formatter.errors)
+      message = if formatter.received_formats.empty?
+                  'Specify format!'
+                else
+                  "Unknown time format [#{formatter.unknown_formats.join(', ')}]"
+                end
+
+      response(400, message)
     end
   end
 
